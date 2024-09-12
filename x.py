@@ -13,7 +13,6 @@ from    util                    import  parse_args, reformat
 def run(data: List[dict]):
 
     model = LinearRegression()
-
     betas = []
 
     for date, arrs in data.items():
