@@ -1,5 +1,6 @@
 import  numpy                   as      np
 import  plotly.graph_objects    as      go
+from    sklearn.linear_model    import  LinearRegression
 from    sys                     import  argv
 from    time                    import  time
 from    typing                  import  List
@@ -11,7 +12,40 @@ from    util                    import  parse_args, reformat
 
 def run(data: List[dict]):
 
-    pass
+    model = LinearRegression()
+
+    betas = []
+
+    for date, arrs in data.items():
+
+        X   = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
+        Y   = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
+        X_  = X.reshape(-1, 1)
+
+        model.fit(X_, Y)
+        
+        b   = model.coef_[0]
+        a   = model.intercept_
+        res = Y - model.predict(X_)
+
+        betas.append(b)
+
+        pass
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            {
+                "x":    list(data.keys()),
+                "y":    betas,
+                "name": "test",
+                "mode": "markers"
+            }
+        )
+    )
+
+    fig.show()
 
 
 if __name__ == "__main__":

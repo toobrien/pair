@@ -64,7 +64,7 @@ def reformat(
     x_args: tuple, 
     y_args: tuple, 
     dfs:    List[pl.DataFrame]
-):
+) -> dict:
 
     dates   = sorted(list(dfs.keys()))
     data    = {}
