@@ -14,7 +14,7 @@ pl.Config.set_tbl_cols(-1)
 pl.Config.set_tbl_rows(-1)
 
 
-# python screens/reg/get_historical.py rty_emd 2024-06-18 - RTYU4 EMDU4 
+# python get_historical.py rty_emd 2024-06-18 - RTYU4 EMDU4 
 
 
 def get_df(
