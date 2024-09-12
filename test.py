@@ -12,7 +12,7 @@ pl.Config.set_tbl_cols(-1)
 pl.Config.set_tbl_rows(-1)
 
 
-# python screens/reg/test.py rty_emd - RTY:1 EMD:1 06-14 0
+# python test.py rty_emd - RTY:1 EMD:1 06-14 0
 
 
 def daily_demeaned(dfs: List[pl.DataFrame]):
