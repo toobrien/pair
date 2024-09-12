@@ -1,15 +1,16 @@
-from    bisect                  import  bisect_left
 import  polars                  as      pl
 import  plotly.graph_objects    as      go
 import  numpy                   as      np
 from    sys                     import  argv
 from    time                    import  time
 from    typing                  import  List
-from    util                    import  get_dfs
+from    util                    import  get_dfs, resample
 
 
 pl.Config.set_tbl_cols(-1)
 pl.Config.set_tbl_rows(-1)
+
+INTERVAL = 60
 
 
 # python test.py rty_emd - RTY:1 EMD:1 06-14 0
@@ -22,11 +23,8 @@ def daily_demeaned(dfs: List[pl.DataFrame]):
     for date, df in dfs.items():
 
         ts          = np.array(df["ts"])
-        i           = bisect_left(ts, f"{date}T{i_ts}")
-        j           = bisect_left(ts, f"{date}T{j_ts}")
-        ts          = ts[i:j]
-        x           = np.array(df[x_sym])[i:j]
-        y           = np.array(df[y_sym])[i:j]
+        x           = np.array(df[x_sym])
+        y           = np.array(df[y_sym])
         spread      = y * float(y_mult) - x * float(x_mult)
         demeaned    = spread - np.mean(spread)
         ts          = [ t.split("T")[1] for t in ts ]
@@ -49,32 +47,27 @@ def daily_demeaned(dfs: List[pl.DataFrame]):
 def continuous(dfs: List[pl.DataFrame]):
 
     fig         = go.Figure()
-    interval    = 60
     Y           = []
     A           = []
     T           = []
     i_          = 0
 
-    for date, df in dfs.items():
+    for _, df in dfs.items():
 
         ts          = df["ts"]
-        i           = bisect_left(ts, f"{date}T{i_ts}")
-        j           = bisect_left(ts, f"{date}T{j_ts}")
-        ts          = ts[i:j]
-        x           = np.array(df[x_sym])[i:j]
-        y           = np.array(df[y_sym])[i:j]
+        x           = np.array(df[x_sym])
+        y           = np.array(df[y_sym])
         spread      = y * float(y_mult) - x * float(x_mult)
         mu          = np.cumsum(spread) / np.array([ i for i in range(1, len(spread) + 1) ])
-        rng         = range(0, len(spread), interval)
-        spread      = [ spread[i] for i in rng ]
-        mu          = [ mu[i] for i in rng ]
-        text        = [ ts[i] for i in rng ]
+        spread      = resample(spread, INTERVAL)
+        mu          = resample(mu, INTERVAL)
+        text        = resample(ts, INTERVAL)
         i_          = i_ + len(spread)
         
         fig.add_vline(
             x               = i_, 
             annotation_text = ts[0].split("T")[0], 
-            line            = { "color": "rgba(255, 0, 255, 0.5)" }
+            line            = { "color": "#FF00FF" }
         )
 
         Y.extend(spread)
@@ -112,8 +105,8 @@ if __name__ == "__main__":
     y_sym, y_mult   = argv[4].split(":")
     i_ts, j_ts      = argv[5].split("-")
     mode            = int(argv[6])
-    dfs             = get_dfs(folder, limit, True)
-    
+    dfs             = get_dfs(folder, limit, i_ts, j_ts, True)
+
     modes = {
         0: daily_demeaned,
         1: continuous
