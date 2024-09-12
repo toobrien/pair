@@ -16,7 +16,7 @@ INTERVAL = 60
 # python test.py rty_emd - RTY:1 EMD:1 06-14 0
 
 
-def daily_demeaned(dfs: List[pl.DataFrame]):
+def demeaned(dfs: List[pl.DataFrame]):
 
     fig = go.Figure()
     i_  = 0
@@ -58,12 +58,11 @@ def daily_demeaned(dfs: List[pl.DataFrame]):
 def continuous(dfs: List[pl.DataFrame]):
 
     fig         = go.Figure()
-    Y           = []
     A           = []
     T           = []
     i_          = 0
 
-    for _, df in dfs.items():
+    for date, df in dfs.items():
 
         ts          = df["ts"]
         x           = np.array(df[x_sym])
@@ -73,36 +72,34 @@ def continuous(dfs: List[pl.DataFrame]):
         spread      = resample(spread, INTERVAL)
         mu          = resample(mu, INTERVAL)
         text        = resample(ts, INTERVAL)
-        i_          = i_ + len(spread)
-        
-        fig.add_vline(
-            x               = i_, 
-            annotation_text = ts[0].split("T")[0], 
-            line            = { "color": "#FF00FF" }
-        )
-
-        Y.extend(spread)
-        A.extend(mu)
-        T.extend(text)
-
-    X       = [ i for i in range(len(Y)) ]
-    traces  = [
-                ( Y, "spread" ),
-                ( A, "mean" )
-            ]
-
-    for trace in traces:
 
         fig.add_trace(
             go.Scattergl(
                 {
-                    "x":    X,
-                    "y":    trace[0],
-                    "name": trace[1],
-                    "text": T
+                    "x":    [ i_ + i for i in range(len(ts)) ],
+                    "y":    spread,
+                    "name": date,
+                    "text": text,
                 }
             )
         )
+
+        i_ = i_ + len(spread)
+
+        A.extend(mu)
+        T.extend(text)
+
+    fig.add_trace(
+        go.Scattergl(
+            {
+                "x":        [ i for i in range(len(A)) ],
+                "y":        A,
+                "name":     "mean",
+                "text":     T,
+                "marker":   { "color": "#FF00FF" } 
+            }
+        )
+    )
 
     fig.show()
 
@@ -119,7 +116,7 @@ if __name__ == "__main__":
     dfs             = get_dfs(folder, limit, i_ts, j_ts, True)
 
     modes = {
-        0: daily_demeaned,
+        0: demeaned,
         1: continuous
     }
 
