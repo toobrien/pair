@@ -19,6 +19,8 @@ INTERVAL = 60
 def daily_demeaned(dfs: List[pl.DataFrame]):
 
     fig = go.Figure()
+    i_  = 0
+    X   = []
 
     for date, df in dfs.items():
 
@@ -32,15 +34,24 @@ def daily_demeaned(dfs: List[pl.DataFrame]):
         fig.add_trace(
             go.Scattergl(
                 {
-                    "x":    ts,
-                    "y":    demeaned,
-                    "name": date,
-                    "text": [ f"{i:0.2f}" for i in spread ]
+                    "x":        [ i_ + i for i in range(len(ts)) ],
+                    "y":        demeaned,
+                    "name":     date,
+                    "text":     ts,
+                    #"marker":   { "color": "#0000FF" }
                 }
             )
-        )        
+        )
+
+        i_ += len(ts)
+        X.extend(demeaned)
+
+    sigma = np.std(X)
 
     fig.add_hline(y = 0, line_color = "#FF0000")
+    fig.add_hline(y = sigma, line_color = "#FF00FF")
+    fig.add_hline(y = -sigma, line_color = "#FF00FF")
+
     fig.show()
 
 
