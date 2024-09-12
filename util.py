@@ -20,8 +20,6 @@ def parse_args(argv: List[str]):
         "x_mult":   x_mult,
         "y_sym":    y_sym,
         "y_mult":   y_mult,
-        "i_ts":     i_ts,
-        "j_ts":     j_ts,
         "mode":     mode,
         "dfs":      dfs,
     }
@@ -60,6 +58,32 @@ def get_dfs(
             }
 
     return dfs
+
+
+def reformat(
+    x_args: tuple, 
+    y_args: tuple, 
+    dfs:    List[pl.DataFrame]
+):
+
+    dates   = sorted(list(dfs.keys()))
+    data    = {}
+
+    for date in dates:
+
+        df          = dfs[date]
+        data[date]  = {
+                        "ts":       [ ts.split("T")[1] for ts in (df['ts']) ],
+                        "x_bid":    np.array(df[f'{x_args[0]}_bid']),
+                        "x_ask":    np.array(df[f'{x_args[0]}_ask']),
+                        "x_mid":    np.array(df[f'{x_args[0]}']),
+                        "y_bid":    np.array(df[f'{y_args[0]}_bid']),
+                        "y_ask":    np.array(df[f'{y_args[0]}_ask']),
+                        "y_mid":    np.array(df[f'{y_args[0]}']),
+                        "spread":   np.array(df[f'{y_args[0]}'] * y_args[1] - df[f'{x_args[0]}'] * x_args[1])
+                    }
+
+    return data
 
 
 def resample(
