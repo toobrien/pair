@@ -34,6 +34,9 @@ def betas(data: List[dict]):
 
         pass
 
+    print(f"a: {np.mean(alphas)}")
+    print(f"b: {np.mean(betas)}")
+
     fig     = go.Figure()
     X       = list(data.keys())
     traces  = [
@@ -60,8 +63,8 @@ def betas(data: List[dict]):
 
 def static(data: List[dict]):
 
-    alpha       = 0
-    beta        = 0.70
+    alpha       = 0.0005
+    beta        = 0.7350
     i_          = 0
     fig         = go.Figure()
 
