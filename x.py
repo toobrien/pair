@@ -12,8 +12,9 @@ from    util                    import  parse_args, reformat
 
 def betas(data: List[dict]):
 
-    model = LinearRegression()
-    betas = []
+    model   = LinearRegression()
+    betas   = []
+    alphas  = []
 
     for date, arrs in data.items():
 
@@ -29,21 +30,30 @@ def betas(data: List[dict]):
         res = Y - model.predict(X_)
 
         betas.append(b)
+        alphas.append(a)
 
         pass
 
-    fig = go.Figure()
+    fig     = go.Figure()
+    X       = list(data.keys())
+    traces  = [
+                ( betas,  "betas",  "#0000FF" ),
+                ( alphas, "alphas", "#FF0000" )
+            ] 
 
-    fig.add_trace(
-        go.Scatter(
-            {
-                "x":    list(data.keys()),
-                "y":    betas,
-                "name": "test",
-                "mode": "markers"
-            }
+    for trace in traces:
+
+        fig.add_trace(
+            go.Scatter(
+                {
+                    "x":        X,
+                    "y":        trace[0],
+                    "name":     trace[1],
+                    "mode":     "markers",
+                    "marker":   { "color": trace[2] }
+                }
+            )
         )
-    )
 
     fig.show()
 
