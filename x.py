@@ -70,16 +70,22 @@ def static(data: List[dict]):
 
     for date, arrs in data.items():
 
-        X   = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
-        Y   = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
-        res = Y - (X * beta + alpha)
+        X       = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
+        Y       = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
+        spread  = arrs["spread"]
+        res     = Y - (X * beta + alpha)
+        text    = [
+                    f"{date}<br>{arrs['ts'][i]}<br>{spread[i]:0.2f}"
+                    for i in range(len(arrs["ts"]))
+                ]
 
         fig.add_trace(
             go.Scattergl(
                 {
                     "x":    [ i_ + i for i in range(len(res)) ],
                     "y":    res,
-                    "name": date
+                    "name": date,
+                    "text": text
                 }
             )
         )
