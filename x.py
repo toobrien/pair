@@ -1,3 +1,4 @@
+from    bisect                  import  bisect_left
 import  numpy                   as      np
 import  plotly.graph_objects    as      go
 from    sklearn.linear_model    import  LinearRegression
@@ -96,6 +97,60 @@ def static(data: List[dict]):
     fig.show()
 
 
+def t_rule(data: List[dict]):
+
+    in_ts   = "11:30"
+    out_ts  = "13:00"
+    T       = 0.001
+    model   = LinearRegression()
+    C       = []
+    text    = []
+    prev    = 0
+
+    for date, arrs in data.items():
+
+        ts          = arrs["ts"]
+        i           = bisect_left(ts, in_ts)
+        j           = bisect_left(ts, out_ts)
+        spread      = arrs["spread"][i:]
+        X           = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
+        Y           = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
+        
+        model.fit(X[:i].reshape(-1, 1), Y[:i])
+
+        Y_          = model.predict(X[i:].reshape(-1, 1))
+        residuals   = Y[i:] - Y_
+
+        for i_ in range(len(residuals)):
+
+            if abs(residuals[i_]) > T:
+
+                pos     = -(residuals[i_] / abs(residuals[i_])) # 1 or -1
+                C_      = spread[i_:j] * pos
+                C_      = C_ - C_[0] + prev
+                prev    = C_[-1]
+
+                C.extend(C_)
+                text.extend([ f"{date}T{ts_}" for ts_ in ts[i_:j] ])
+
+                break
+        
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scattergl(
+            {
+                "x":    [ i for i in range(len(C) - 1) ],
+                "y":    C,
+                "name": "eqc",
+                "text": text
+            }
+        )
+    )
+
+    fig.show()
+
+
 if __name__ == "__main__":
 
     t0      = time()
@@ -107,7 +162,8 @@ if __name__ == "__main__":
 
     modes = {
         0: betas,
-        1: static
+        1: static,
+        2: t_rule
     }   
     
     modes[mode](data)
