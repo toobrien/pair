@@ -113,7 +113,7 @@ def t_rule(data: List[dict]):
         ts          = arrs["ts"]
         i           = bisect_left(ts, in_ts)
         j           = bisect_left(ts, out_ts)
-        spread      = arrs["spread"][i:]
+        spread      = arrs["spread"]
         X           = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
         Y           = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
         
@@ -127,12 +127,12 @@ def t_rule(data: List[dict]):
             if abs(residuals[i_]) > T:
 
                 pos     = -(residuals[i_] / abs(residuals[i_])) # 1 or -1
-                C_      = spread[i_:j] * pos
+                C_      = spread[i + i_:j] * pos
                 C_      = C_ - C_[0] + prev
                 prev    = C_[-1]
 
                 C.extend(C_)
-                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[i_:j] ])
+                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[i + i_:j] ])
 
                 break
         
