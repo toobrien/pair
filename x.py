@@ -5,7 +5,7 @@ from    sklearn.linear_model    import  LinearRegression
 from    sys                     import  argv
 from    time                    import  time
 from    typing                  import  List
-from    util                    import  parse_args, reformat
+from    util                    import  parse_args, reformat, resample
 
 
 # python x.py rty_emd - RTY:1 EMD:1 06-14 0
@@ -99,13 +99,14 @@ def static(data: List[dict]):
 
 def t_rule(data: List[dict]):
 
-    in_ts   = "11:30"
-    out_ts  = "13:00"
-    T       = 0.001
-    model   = LinearRegression()
-    C       = []
-    text    = []
-    prev    = 0
+    in_ts           = "11:30"
+    out_ts          = "13:00"
+    T               = 0.001
+    resample_out    = True
+    model           = LinearRegression()
+    C               = []
+    text            = []
+    prev            = 0
 
     for date, arrs in data.items():
 
@@ -131,16 +132,22 @@ def t_rule(data: List[dict]):
                 prev    = C_[-1]
 
                 C.extend(C_)
-                text.extend([ f"{date}T{ts_}" for ts_ in ts[i_:j] ])
+                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[i_:j] ])
 
                 break
         
     fig = go.Figure()
 
+    if resample_out:
+
+        X       = resample([ i for i in range(len(C)) ], 60)
+        C       = resample(C, 60)
+        text    = resample(text, 60)
+
     fig.add_trace(
         go.Scattergl(
             {
-                "x":    [ i for i in range(len(C) - 1) ],
+                "x":    X,
                 "y":    C,
                 "name": "eqc",
                 "text": text
