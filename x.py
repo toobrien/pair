@@ -137,10 +137,11 @@ def t_rule(data: List[dict]):
                 break
         
     fig = go.Figure()
+    X   = [ i for i in range(len(C)) ]
 
     if resample_out:
 
-        X       = resample([ i for i in range(len(C)) ], 60)
+        X       = resample(X, 60)
         C       = resample(C, 60)
         text    = resample(text, 60)
 
