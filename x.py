@@ -17,7 +17,7 @@ def betas(data: List[dict]):
     betas   = []
     alphas  = []
 
-    for date, arrs in data.items():
+    for _, arrs in data.items():
 
         X   = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
         Y   = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
