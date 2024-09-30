@@ -5,18 +5,21 @@ import  plotly.graph_objects    as      go
 from    sys                     import  argv
 
 
-# python 2024-09-30 06:30 live
+# python 2024-09-30 06:30-14:00 live
 
 
 if __name__ == "__main__":
 
     date    = argv[1]
-    start   = f"{date}T{argv[2]}"
+    bounds  = argv[2].split("-")
+    start   = f"{date}T{bounds[0]}"
+    end     = f"{date}T{bounds[1]}"
     mode    = argv[3]
     df      = pl.read_csv(f"./csvs/{mode}/{date}.csv")
     ts      = list(df["ts"])
     i       = bisect_left(ts, start)
-    ts      = ts[i:]
+    j       = bisect_left(ts, end)
+    ts      = ts[i:j]
     fig     = go.Figure()
 
     for col in df.columns[1:]:
@@ -25,7 +28,7 @@ if __name__ == "__main__":
 
             continue
 
-        y = np.log(np.array(df[col][i:]))
+        y = np.log(np.array(df[col][i:j]))
         y = y - y[0]
 
         fig.add_trace(
