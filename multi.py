@@ -28,15 +28,16 @@ if __name__ == "__main__":
 
             continue
 
-        y = np.log(np.array(df[col][i:j]))
-        y = y - y[0]
+        y   = df[col][i:j]
+        y_  = np.log(np.array(y)) - np.log(y[0])
 
         fig.add_trace(
             go.Scattergl(
                 {
                     "x":    ts,
-                    "y":    y,
-                    "name": col
+                    "y":    y_,
+                    "name": col,
+                    "text": y
                 }
             )
         )
