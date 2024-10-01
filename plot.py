@@ -56,10 +56,10 @@ def regress(
     latest      = text[-1].split(":")[0][-2:] # most recent hour
     color       = [ "#FF0000" if latest in text[i].split(":")[0][-2:] else "#0000FF" for i in range(len(text)) ]
     fig         = make_subplots(
-                    rows                = 2,
+                    rows                = 3,
                     cols                = 2,
                     column_widths       = [ 0.7, 0.3 ],
-                    row_heights         = [ 0.6, 0.4 ],
+                    row_heights         = [ 0.4, 0.3, 0.3 ],
                     vertical_spacing    = 0.025,
                     horizontal_spacing  = 0.025,
                     specs               = [ 
@@ -70,7 +70,8 @@ def regress(
                                                     "secondary_y":  True
                                                 },
                                                 None
-                                            ] 
+                                            ],
+                                            [ { "colspan": 2 }, {} ]
                                         ]
                 )
     
@@ -164,7 +165,30 @@ def regress(
         col         = 1
     )
 
-    fig.add_hline(y = 0, row = 2, col = 1, line_color = "#FF0000")
+    fig.add_hline(y = 0, row = 2, col = 1, line_color = "#FF00FF")
+
+    traces = [
+                ( x_, x_sym, "#CCCCCC" ),
+                ( y_, y_sym, "#FF0000" )
+            ]
+
+    for trace in traces:    
+
+        fig.add_trace(
+            go.Scattergl(
+                {
+                    "x":        res_x,
+                    "y":        trace[0],
+                    "name":     trace[1],
+                    "marker":   { "color": trace[2] },
+                    "text":     text
+                }
+            ),
+            row = 3,
+            col = 1
+        )
+
+    fig.add_hline(y = 0, row = 3, col = 1, line_color = "#FF00FF")
 
     title = f"{x_sym}, {y_sym}\t{date}T{start_t} - {end_t}\tb: {b:0.4f}\ta: {a:0.4f}\ts_mu: {m_spread:0.2f}\ts_rng: {r_spread:0.2f}"
 
