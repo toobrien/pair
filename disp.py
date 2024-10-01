@@ -3,8 +3,7 @@ import  plotly.graph_objects    as      go
 import  numpy                   as      np
 from    sys                     import  argv
 from    time                    import  time
-from    typing                  import  List
-from    util                    import  get_dfs, parse_args, resample
+from    util                    import  parse_args, resample
 
 
 pl.Config.set_tbl_cols(-1)
@@ -13,7 +12,7 @@ pl.Config.set_tbl_rows(-1)
 INTERVAL = 60
 
 
-# python x.py rty_emd - RTY:1 EMD:1 06-14 0
+# python disp.py rty_emd - RTY:1 EMD:1 06-14 0
 
 
 def demeaned(args: dict):
