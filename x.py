@@ -203,7 +203,15 @@ def last(data: List[dict]):
         )
 
         fig.add_trace(
-            go.Histogram(x = trace[0], name = trace[2]),
+            go.Histogram(
+                x       = trace[0], 
+                name    = trace[2], 
+                xbins   = {
+                            "start":    min(trace[0]),
+                            "end":      max(trace[0]),
+                            "size":     2
+                        }
+            ),
             row = trace[3], 
             col = 2
         )
@@ -212,6 +220,14 @@ def last(data: List[dict]):
     fig.add_vline(x = thresh, line_color = "#FF00FF", row = 1, col = 2)
     fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 2, col = 1)
     fig.add_vline(x = -thresh, line_color = "#FF00FF", row = 2, col = 2)
+
+    highs    = sorted(highs)
+    lows     = sorted(lows)
+
+    print(f"{'':10}{'mean':>10}{'stdev':>10}{'pct > t':>10}")
+    print(f"{'hi':<10}{np.mean(highs):>10.2f}{np.std(highs):>10.2f}{1 - bisect_left(highs, thresh) / len(highs):>10.2f}")
+    print(f"{'lo':<10}{np.mean(lows):>10.2f}{np.std(lows):>10.2f}{bisect_left(lows, -thresh) / len(lows):>10.2f}")
+    print()
 
     fig.show()
 
