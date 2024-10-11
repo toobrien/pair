@@ -162,7 +162,7 @@ def t_rule(data: List[dict]):
 
 def last(data: List[dict]):
 
-    fig     = make_subplots(rows = 2, cols = 1)
+    fig     = make_subplots(rows = 2, cols = 2)
     dates   = sorted(list(data.keys()))
     thresh  = 2.0
     highs   = []
@@ -174,7 +174,7 @@ def last(data: List[dict]):
         cur     = data[dates[i]]["spread"]
         prev_c  = prev[-1]
         high    = max(cur) - prev_c
-        low     = prev_c - min(cur)
+        low     = min(cur) - prev_c
 
         highs.append(high)
         lows.append(low)
@@ -202,8 +202,16 @@ def last(data: List[dict]):
             col = 1
         )
 
-    fig.add_hline(y = thresh, line_color = "#FF00FF", row = 1)
-    fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 2)
+        fig.add_trace(
+            go.Histogram(x = trace[0], name = trace[2]),
+            row = trace[3], 
+            col = 2
+        )
+
+    fig.add_hline(y = thresh, line_color = "#FF00FF", row = 1, col = 1)
+    fig.add_vline(x = thresh, line_color = "#FF00FF", row = 1, col = 2)
+    fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 2, col = 1)
+    fig.add_vline(x = -thresh, line_color = "#FF00FF", row = 2, col = 2)
 
     fig.show()
 
