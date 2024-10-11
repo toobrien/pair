@@ -1,6 +1,7 @@
 from    bisect                  import  bisect_left
 import  numpy                   as      np
 import  plotly.graph_objects    as      go
+from    plotly.subplots         import  make_subplots
 from    sklearn.linear_model    import  LinearRegression
 from    sys                     import  argv
 from    time                    import  time
@@ -161,7 +162,7 @@ def t_rule(data: List[dict]):
 
 def last(data: List[dict]):
 
-    fig     = go.Figure()
+    fig     = make_subplots(rows = 2, cols = 1)
     dates   = sorted(list(data.keys()))
     thresh  = 2.0
     highs   = []
@@ -180,8 +181,8 @@ def last(data: List[dict]):
 
     X       = [ i for i in range(len(dates)) ]
     traces  = [
-                ( highs, "#0000FF", "highs" ),
-                ( lows, "#FF0000", "lows" )
+                ( highs, "#0000FF", "highs", 0 ),
+                ( lows, "#FF0000", "lows", 1 )
             ]
     
     for trace in traces:
@@ -196,11 +197,13 @@ def last(data: List[dict]):
                     "name":     trace[2],
                     "text":     dates[1:]
                 }
-            )
+            ),
+            row = trace[3],
+            col = 1
         )
 
-    fig.add_hline(y = thresh, line_color = "#FF00FF")
-    fig.add_hline(y = -thresh, line_color = "#FF00FF")
+    fig.add_hline(y = thresh, line_color = "#FF00FF", row = 0)
+    fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 1)
 
     fig.show()
 
