@@ -169,7 +169,8 @@ def regress(
 
     traces = [
                 ( x_, x_sym, "#CCCCCC" ),
-                ( y_, y_sym, "#FF0000" )
+                ( y_, y_sym, "#FF0000" ),
+                ( y_ - x_, "spread", "#FF00FF")
             ]
 
     for trace in traces:    

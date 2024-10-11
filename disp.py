@@ -109,8 +109,8 @@ if __name__ == "__main__":
     args = parse_args(argv)
 
     modes = {
-        0: demeaned,
-        1: continuous
+        "demeaned":     demeaned,
+        "continuous":   continuous
     }
 
     modes[args['mode']](args)

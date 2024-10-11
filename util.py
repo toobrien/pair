@@ -12,7 +12,7 @@ def parse_args(argv: List[str]):
     x_sym, x_mult   = argv[3].split(":")
     y_sym, y_mult   = argv[4].split(":")
     i_ts, j_ts      = argv[5].split("-")
-    mode            = int(argv[6])
+    mode            = argv[6]
     dfs             = get_dfs(folder, limit, i_ts, j_ts, True)
 
     return {

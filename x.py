@@ -159,6 +159,52 @@ def t_rule(data: List[dict]):
     fig.show()
 
 
+def last(data: List[dict]):
+
+    fig     = go.Figure()
+    dates   = sorted(list(data.keys()))
+    thresh  = 2.0
+    highs   = []
+    lows    = []
+
+    for i in range(1, len(dates)):
+
+        prev    = data[dates[i - 1]]["spread"]
+        cur     = data[dates[i]]["spread"]
+        prev_c  = prev[-1]
+        high    = max(cur) - prev_c
+        low     = prev_c - min(cur)
+
+        highs.append(high)
+        lows.append(low)
+
+    X       = [ i for i in range(len(dates)) ]
+    traces  = [
+                ( highs, "#0000FF", "highs" ),
+                ( lows, "#FF0000", "lows" )
+            ]
+    
+    for trace in traces:
+
+        fig.add_trace(
+            go.Scatter(
+                {
+                    "x":        X,
+                    "y":        trace[0],
+                    "mode":     markers,
+                    "marker":   { "color": trace[1] },
+                    "name":     trace[2],
+                    "text":     dates[1:]
+                }
+            )
+        )
+
+    fig.add_hline(y = thresh, line_color = "#FF00FF")
+    fig.add_hline(y = -thresh, line_color = "#FF00FF")
+
+    fig.show()
+
+
 if __name__ == "__main__":
 
     t0      = time()
@@ -169,9 +215,10 @@ if __name__ == "__main__":
     mode    = args["mode"]
 
     modes = {
-        0: betas,
-        1: static,
-        2: t_rule
+        "betas":    betas,
+        "static":   static,
+        "t_rule":   t_rule,
+        "last":     last
     }   
     
     modes[mode](data)
