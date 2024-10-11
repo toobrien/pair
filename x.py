@@ -181,8 +181,8 @@ def last(data: List[dict]):
 
     X       = [ i for i in range(len(dates)) ]
     traces  = [
-                ( highs, "#0000FF", "highs", 0 ),
-                ( lows, "#FF0000", "lows", 1 )
+                ( highs, "#0000FF", "highs", 1 ),
+                ( lows, "#FF0000", "lows", 2 )
             ]
     
     for trace in traces:
@@ -202,8 +202,8 @@ def last(data: List[dict]):
             col = 1
         )
 
-    fig.add_hline(y = thresh, line_color = "#FF00FF", row = 0)
-    fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 1)
+    fig.add_hline(y = thresh, line_color = "#FF00FF", row = 1)
+    fig.add_hline(y = -thresh, line_color = "#FF00FF", row = 2)
 
     fig.show()
 
