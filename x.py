@@ -191,7 +191,7 @@ def last(data: List[dict]):
                 {
                     "x":        X,
                     "y":        trace[0],
-                    "mode":     markers,
+                    "mode":     "markers",
                     "marker":   { "color": trace[1] },
                     "name":     trace[2],
                     "text":     dates[1:]
