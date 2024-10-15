@@ -90,13 +90,17 @@ def regress(
         col = 1
     )
 
+    model_x_price = array([ x0 * e**X[i] * x_mult for i in range(len(X)) ])
+    model_y_price = array([ y0 * e**Y[i] * y_mult for i in range(len(X)) ])
+    model_s_price = model_y_price - model_x_price
+    
     fig.add_trace(
         go.Scattergl(
             {
                 "x":            X,
                 "y":            Y,
                 "text":         [   
-                                    f"{x0* e**X[i]:0.2f}<br>{y0 * e**Y[i]:0.2f}" 
+                                    f"x: {model_x_price[i]:0.2f}<br>y: {model_y_price[i]:0.2f}<br>s: {model_s_price[i]:0.2f}" 
                                     for i in range(len(X)) 
                                 ],
                 "name":         f"model",
