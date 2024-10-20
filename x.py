@@ -9,7 +9,7 @@ from    typing                  import  List
 from    util                    import  parse_args, reformat, resample
 
 
-# python x.py rty_emd - RTY:1 EMD:1 06-14 0
+# python x.py eq_ind - RTY:1 EMD:1 06-14 0
 
 
 def betas(data: List[dict]):
