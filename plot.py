@@ -172,9 +172,9 @@ def regress(
     fig.add_hline(y = 0, row = 2, col = 1, line_color = "#FF00FF")
 
     traces = [
-                ( x_, x_sym, "#CCCCCC" ),
-                ( y_, y_sym, "#FF0000" ),
-                ( y_ - x_, "spread", "#FF00FF")
+                ( x_, x_sym, "#CCCCCC", True ),
+                ( y_, y_sym, "#FF0000", True ),
+                ( y_ - x_, "spread", "#FF00FF", "legendonly" )
             ]
 
     for trace in traces:    
@@ -186,11 +186,12 @@ def regress(
                     "y":        trace[0],
                     "name":     trace[1],
                     "marker":   { "color": trace[2] },
-                    "text":     text
+                    "text":     text,
+                    "visible":  trace[3]
                 }
             ),
-            row = 3,
-            col = 1
+            row     = 3,
+            col     = 1
         )
 
     fig.add_hline(y = 0, row = 3, col = 1, line_color = "#FF00FF")
