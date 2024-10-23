@@ -9,7 +9,7 @@ from    typing                  import  List
 from    util                    import  parse_args, reformat, resample
 
 
-# python x.py eq_ind - RTY:1 EMD:1 06-14 0
+# python x.py eq_ind - RTY:1 EMD:1 06-14 t_rule
 
 
 def betas(data: List[dict]):
@@ -100,10 +100,12 @@ def static(data: List[dict]):
 
 def t_rule(data: List[dict]):
 
+    mode            = "Z"
     in_ts           = "11:30"
     out_ts          = "13:00"
-    T               = 0.001
+    T               = 0.001 if mode == "R" else 2.0 if mode == "Z" else None
     resample_out    = True
+    resample_freq   = 60
     model           = LinearRegression()
     C               = []
     text            = []
@@ -122,18 +124,23 @@ def t_rule(data: List[dict]):
 
         Y_          = model.predict(X[i:].reshape(-1, 1))
         residuals   = Y[i:] - Y_
+        z_res       = (residuals - np.mean(residuals)) / residuals.std()
+        feature     = residuals if mode == "R" else z_res
 
-        for i_ in range(len(residuals)):
+        for i_ in range(len(feature)):
 
-            if abs(residuals[i_]) > T:
+            if abs(feature[i_]) > T:
 
-                pos     = -(residuals[i_] / abs(residuals[i_])) # 1 or -1
-                C_      = spread[i + i_:j] * pos
+                pos     = -(feature[i_] / abs(feature[i_]))                                             # 1 or -1
+                zero_i  = np.where(feature[i_:] > 0) if feature[i_] < 0 else np.where(feature[i_:] < 0) # return to fv
+                m       = i + i_
+                n       = m + zero_i[0][0] if len(zero_i[0]) > 0 else j                                 # sooner of return to fv, session close
+                C_      = spread[m:n] * pos
                 C_      = C_ - C_[0] + prev
                 prev    = C_[-1]
 
                 C.extend(C_)
-                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[i + i_:j] ])
+                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[m:n] ])
 
                 break
         
@@ -142,9 +149,9 @@ def t_rule(data: List[dict]):
 
     if resample_out:
 
-        X       = resample(X, 60)
-        C       = resample(C, 60)
-        text    = resample(text, 60)
+        X       = resample(X, resample_freq)
+        C       = resample(C, resample_freq)
+        text    = resample(text, resample_freq)
 
     fig.add_trace(
         go.Scattergl(
