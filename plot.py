@@ -3,7 +3,7 @@ import  plotly.graph_objects    as      go
 from    plotly.subplots         import  make_subplots
 from    polars                  import  read_csv
 from    math                    import  e, log
-from    numpy                   import  arange, array, mean
+from    numpy                   import  arange, array, mean, std
 from    sklearn.linear_model    import  LinearRegression
 from    sys                     import  argv
 
@@ -44,13 +44,16 @@ def regress(
     b           = model.coef_[0]
     a           = model.intercept_
     residuals   = y_ - model.predict(x_.reshape(-1, 1))
+    res_mu      = mean(residuals)
+    res_std     = std(residuals)
+    z_scores    = (residuals - res_mu) / res_std
     res_x       = [ i for i in range(len(residuals)) ]
     m_spread    = mean(spread)
     r_spread    = max(spread) - min(spread)
     o_spread    = [ x - m_spread for x in spread ]
 
     text        = [
-                    f"{ts[i]}<br>x:{x[i]:>10.2f}<br>y:{y[i]:>10.2f}<br>s:{spread[i]:>10.2f}<br>r:{residuals[i]:>10.4f}<br>o:{o_spread[i]:>10.2f}"
+                    f"{ts[i]}<br>x:{x[i]:>10.2f}<br>y:{y[i]:>10.2f}<br>s:{spread[i]:>10.2f}<br>r:{residuals[i]:>10.4f}<br>z:{z_scores[i]:>10.4f}<br>o:{o_spread[i]:>10.2f}"
                     for i in range(len(ts))
                 ]
     latest      = text[-1].split(":")[0][-2:] # most recent hour
@@ -170,6 +173,8 @@ def regress(
     )
 
     fig.add_hline(y = 0, row = 2, col = 1, line_color = "#FF00FF")
+    fig.add_hline(y = 2 * res_std, row = 2, col = 1, line_color = "#FF00FF")
+    fig.add_hline(y = -2 * res_std, row = 2, col = 1, line_color = "#FF00FF")
 
     traces = [
                 ( x_, x_sym, "#CCCCCC", True ),
