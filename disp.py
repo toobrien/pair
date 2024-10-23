@@ -78,7 +78,7 @@ def continuous(args: dict):
                     "x":    [ i_ + i for i in range(len(ts)) ],
                     "y":    spread,
                     "name": date,
-                    "text": text,
+                    "text": text
                 }
             )
         )
@@ -95,7 +95,8 @@ def continuous(args: dict):
                 "y":        A,
                 "name":     "mean",
                 "text":     T,
-                "marker":   { "color": "#FF00FF" } 
+                "marker":   { "color": "#FF00FF" },
+                "visible":  False
             }
         )
     )
