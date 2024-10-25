@@ -51,29 +51,25 @@ def regress(
     m_spread    = mean(spread)
     r_spread    = max(spread) - min(spread)
     o_spread    = [ x - m_spread for x in spread ]
+    spread_std  = std(o_spread)
 
     text        = [
-                    f"{ts[i]}<br>x:{x[i]:>10.2f}<br>y:{y[i]:>10.2f}<br>s:{spread[i]:>10.2f}<br>r:{residuals[i]:>10.4f}<br>z:{z_scores[i]:>10.4f}<br>o:{o_spread[i]:>10.2f}"
+                    f"{ts[i]}<br>s:{spread[i]:>10.2f}<br>o:{o_spread[i]:>10.2f}<br>r:{residuals[i]:>10.4f}<br>z:{z_scores[i]:>10.4f}<br>x:{x[i]:>10.2f}<br>y:{y[i]:>10.2f}"
                     for i in range(len(ts))
                 ]
     latest      = text[-1].split(":")[0][-2:] # most recent hour
     color       = [ "#FF0000" if latest in text[i].split(":")[0][-2:] else "#0000FF" for i in range(len(text)) ]
     fig         = make_subplots(
-                    rows                = 3,
+                    rows                = 4,
                     cols                = 2,
                     column_widths       = [ 0.7, 0.3 ],
-                    row_heights         = [ 0.4, 0.3, 0.3 ],
+                    row_heights         = [ 0.25, 0.25, 0.25, 0.25 ],
                     vertical_spacing    = 0.025,
                     horizontal_spacing  = 0.025,
                     specs               = [ 
                                             [ {}, {} ], 
-                                            [ 
-                                                { 
-                                                    "colspan":      2, 
-                                                    "secondary_y":  True
-                                                },
-                                                None
-                                            ],
+                                            [ { "colspan": 2 }, {} ],
+                                            [ { "colspan": 2 }, {} ],
                                             [ { "colspan": 2 }, {} ]
                                         ]
                 )
@@ -152,7 +148,6 @@ def regress(
                 "name":         f"res plot"
             }
         ),
-        secondary_y = False,
         row         = 2,
         col         = 1
     )
@@ -167,14 +162,17 @@ def regress(
                 
             }
         ),
-        secondary_y = True,
-        row         = 2,
+        row         = 3,
         col         = 1
     )
 
     fig.add_hline(y = 0, row = 2, col = 1, line_color = "#FF00FF")
     fig.add_hline(y = 2 * res_std, row = 2, col = 1, line_color = "#FF00FF")
     fig.add_hline(y = -2 * res_std, row = 2, col = 1, line_color = "#FF00FF")
+
+    fig.add_hline(y = 0, row = 3, col = 1, line_color = "#FF00FF")
+    fig.add_hline(y = 2 * spread_std, row = 3, col = 1, line_color = "#FF00FF")
+    fig.add_hline(y = -2 * spread_std, row = 3, col = 1, line_color = "#FF00FF")
 
     traces = [
                 ( x_, x_sym, "#CCCCCC", True ),
@@ -195,11 +193,11 @@ def regress(
                     "visible":  trace[3]
                 }
             ),
-            row     = 3,
+            row     = 4,
             col     = 1
         )
 
-    fig.add_hline(y = 0, row = 3, col = 1, line_color = "#FF00FF")
+    fig.add_hline(y = 0, row = 4, col = 1, line_color = "#FF00FF")
 
     title = f"{x_sym}, {y_sym}\t{date}T{start_t} - {end_t}\tb: {b:0.4f}\ta: {a:0.4f}\ts_mu: {m_spread:0.2f}\ts_rng: {r_spread:0.2f}"
 
