@@ -5,7 +5,7 @@ import  plotly.graph_objects    as      go
 from    sys                     import  argv
 
 
-# python 06:30-14:00 live 2024-09-30
+# python multi.py 06:30-14:00 live 2024-10-28
 
 
 if __name__ == "__main__":
