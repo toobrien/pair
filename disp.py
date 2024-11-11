@@ -12,7 +12,7 @@ pl.Config.set_tbl_rows(-1)
 INTERVAL = 60
 
 
-# python disp.py rty_emd - RTY:1 EMD:1 06-14 0
+# python disp.py eq_ind - RTY:1 EMD:1 06:30-14 continuous
 
 
 def demeaned(args: dict):

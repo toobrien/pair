@@ -63,7 +63,7 @@ def regress(
                     rows                = 4,
                     cols                = 2,
                     column_widths       = [ 0.7, 0.3 ],
-                    row_heights         = [ 0.25, 0.25, 0.25, 0.25 ],
+                    row_heights         = [ 0.4, 0.2, 0.2, 0.2 ],
                     vertical_spacing    = 0.025,
                     horizontal_spacing  = 0.025,
                     specs               = [ 
