@@ -122,8 +122,8 @@ def t_rule(data: List[dict]):
         
         model.fit(X[:i].reshape(-1, 1), Y[:i])
 
-        Y_          = model.predict(X[i:].reshape(-1, 1))
-        residuals   = Y[i:] - Y_
+        Y_          = model.predict(X[i:j].reshape(-1, 1))
+        residuals   = Y[i:j] - Y_
         z_res       = (residuals - np.mean(residuals)) / residuals.std()
         feature     = residuals if mode == "R" else z_res
 
