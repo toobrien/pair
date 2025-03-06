@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     for col in df.columns[1:]:
 
-        if mode != "live" and "bid" in col or "ask" in col:
+        if mode != "live" and "_" in col:
 
             continue
 

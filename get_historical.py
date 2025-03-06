@@ -14,7 +14,7 @@ pl.Config.set_tbl_cols(-1)
 pl.Config.set_tbl_rows(-1)
 
 
-# python get_historical.py eq_ind 2024-06-18 - RTYU4 EMDU4 
+# python get_historical.py eq_ind 2024-09-18 - ESH5 NQH5 YMH5 RTYH5 EMDH5
 
 
 def get_df(
@@ -25,7 +25,7 @@ def get_df(
     
     args = {
             "dataset":  "GLBX.MDP3",
-            "schema":   "mbp-1",
+            "schema":   "bbo-1s",
             "stype_in": "raw_symbol",
             "symbols":  [ symbol ],
             "start":    start,
@@ -104,6 +104,9 @@ if __name__ == "__main__":
             bid         = in_df["bid_px_00"]
             ask         = in_df["ask_px_00"]
             mid         = (bid + ask) / 2
+            last        = in_df["price"]
+            qty         = in_df["size"]
+            side        = in_df["side"]
 
             # start ts is the latest initial timestamp, as i do not know previous state
             # end ts is the latest timestamp of all symbols, as the same period is downloaded for each
@@ -115,7 +118,10 @@ if __name__ == "__main__":
                         "ts":   ts,
                         "bid":  bid,
                         "ask":  ask,
-                        "mid":  mid
+                        "mid":  mid,
+                        "last": last,
+                        "qty":  qty,
+                        "side": side
                     }
             
         if skip_date:
@@ -141,23 +147,32 @@ if __name__ == "__main__":
 
         for sym, vecs in data.items():
 
-            ts  = vecs["ts"]
-            N   = len(ts)
-            idx = np.searchsorted(ts, ts_rng)
-            bid = vecs["bid"]
-            ask = vecs["ask"]
-            mid = vecs["mid"]
+            ts      = vecs["ts"]
+            N       = len(ts)
+            idx     = np.searchsorted(ts, ts_rng)
+            bid     = vecs["bid"]
+            ask     = vecs["ask"]
+            mid     = vecs["mid"]
+            last    = vecs["last"]
+            qty     = vecs["qty"]
+            side    = vecs["side"]
         
-            ts  = [ ts[int(i - 1)] if i < N else ts[-1] for i in idx ]
-            bid = [ bid[int(i - 1)] if i < N else bid[-1] for i in idx ]
-            ask = [ ask[int(i - 1)] if i < N else ask[-1] for i in idx ]
-            mid = [ mid[int(i - 1)] if i < N else mid[-1] for i in idx ]
+            ts      = [ ts[int(i - 1)] if i < N else ts[-1] for i in idx ]
+            bid     = [ bid[int(i - 1)] if i < N else bid[-1] for i in idx ]
+            ask     = [ ask[int(i - 1)] if i < N else ask[-1] for i in idx ]
+            mid     = [ mid[int(i - 1)] if i < N else mid[-1] for i in idx ]
+            last    = [ last[int(i - 1)] if i < N else last[-1] for i in idx ]
+            qty     = [ qty[int(i - 1)] if i < N else qty[-1] for i in idx ]
+            side    = [ side[int(i - 1)] if i < N else side[-1] for i in idx ]
 
             out_df = out_df.with_columns(
                     [
                         pl.Series(f"{sym}_bid", bid),
                         pl.Series(f"{sym}_ask", ask),
-                        pl.Series(sym, mid)
+                        pl.Series(sym, mid),
+                        pl.Series(f"{sym}_last", last),
+                        pl.Series(f"{sym}_qty",  qty),
+                        pl.Series(f"{sym}_side", side)
                     ]
                 )
         

@@ -83,29 +83,38 @@ if __name__ == "__main__":
 
                 continue
 
-            ts_ = [ 
-                    (
-                        datetime.fromisoformat(t).replace(microsecond = 0)
-                    ).strftime("%Y-%m-%dT%H:%M:%S") 
-                    for t in df_["ts"]
-                ]
-            N   = len(ts_)
-            idx = np.searchsorted(ts_, ts)
-            bid = df_["bid_px_00"]
-            ask = df_["ask_px_00"]
-            mid = ((bid + ask) / 2)
-
-            bid = [ bid[int(i - 1)] if i < N else bid[-1] for i in idx ]
-            ask = [ ask[int(i - 1)] if i < N else ask[-1] for i in idx ]
-            mid = [ mid[int(i - 1)] if i < N else mid[-1] for i in idx ]
-
-            df  = df.with_columns(
-                    [
-                        pl.Series(f"{root}_bid", bid),
-                        pl.Series(f"{root}_ask", ask),
-                        pl.Series(root, mid)
+            ts_     = [ 
+                        (
+                            datetime.fromisoformat(t).replace(microsecond = 0)
+                        ).strftime("%Y-%m-%dT%H:%M:%S") 
+                        for t in df_["ts"]
                     ]
-                )
+            N       = len(ts_)
+            idx     = np.searchsorted(ts_, ts)
+            bid     = df_["bid_px_00"]
+            ask     = df_["ask_px_00"]
+            mid     = ((bid + ask) / 2)
+            last    = df_["price"]
+            qty     = df_["size"]
+            side    = df_["side"]  
+
+            bid     = [ bid[int(i - 1)] if i < N else bid[-1] for i in idx ]
+            ask     = [ ask[int(i - 1)] if i < N else ask[-1] for i in idx ]
+            mid     = [ mid[int(i - 1)] if i < N else mid[-1] for i in idx ]
+            last    = [ last[int(i - 1)] if i < N else last[-1] for i in idx ]
+            qty     = [ qty[int(i - 1)] if i < N else qty[-1] for i in idx ]
+            side    = [ side[int(i - 1)] if i < N else side[-1] for i in idx ]
+
+            df = df.with_columns(
+                [
+                    pl.Series(f"{root}_bid", bid),
+                    pl.Series(f"{root}_ask", ask),
+                    pl.Series(root, mid),
+                    pl.Series(f"{root}_last", last),
+                    pl.Series(f"{root}_qty",  qty),
+                    pl.Series(f"{root}_side", side)
+                ]
+            )
 
         df.write_csv(f"./csvs/tmp/{start_date}.csv")
         
