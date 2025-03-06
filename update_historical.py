@@ -79,7 +79,7 @@ if __name__ == "__main__":
             
             pass
 
-            if df_.is_empty():
+            if len(df_) <= 1:
 
                 continue
 

@@ -14,7 +14,7 @@ pl.Config.set_tbl_cols(-1)
 pl.Config.set_tbl_rows(-1)
 
 
-# python get_historical.py eq_ind 2024-09-18 - ESH5 NQH5 YMH5 RTYH5 EMDH5
+# python get_historical.py eq_ind 2024-09-18 - ESH5 NQH5 RTYH5 EMDH5 YMH5
 
 
 def get_df(
@@ -34,9 +34,6 @@ def get_df(
 
     cost = CLIENT.metadata.get_cost(**args)
     size = CLIENT.metadata.get_billable_size(**args)
-
-    print(f"{symbol + ' cost':<15}{cost:0.4f}")
-    print(f"{symbol + ' size':<15}{size} ({size / 1073741824:0.2f} GB)")
 
     try:
 
@@ -59,9 +56,9 @@ def get_df(
 
         print(e)
 
-        df = pl.DataFrame()
+        df = pl.DataFrame(), 0, 0
 
-    return df
+    return df, cost, size
 
 
 
@@ -87,13 +84,21 @@ if __name__ == "__main__":
         start_ts    = "0000"
         end_ts      = "0000"
         data        = {}
+        total_cost  = 0
         skip_date   = False
+
+        print(f"{start_date} - {end_date}")
 
         for symbol in symbols:
 
-            in_df = get_df(symbol, start_date, end_date)
+            in_df, cost, size = get_df(symbol, start_date, end_date)
 
-            if in_df.is_empty() or skip_date:
+            print(f"{symbol + ' cost':<15}{cost:0.4f}")
+            print(f"{symbol + ' size':<15}{size} ({size / 1073741824:0.2f} GB)")
+
+            total_cost += cost
+
+            if len(in_df) <= 1 or skip_date:
 
                 skip_date = True
 
@@ -179,5 +184,6 @@ if __name__ == "__main__":
         out_df.write_csv(f"./csvs/{folder}/{start_date}.csv")
 
         print(f"{start_date:<15}{time() - t_i:0.1f}s\n")
+        print(f"{start_date:<15}{total_cost:0.4f}")
 
     print(f"{time() - t0:0.1f}s\n")
