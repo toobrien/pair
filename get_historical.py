@@ -87,6 +87,14 @@ if __name__ == "__main__":
         total_cost  = 0
         skip_date   = False
 
+        if (datetime.strptime(start_date, DATE_FMT).weekday() in ( 5, 6 )):
+
+            # skip saturday and sunday
+
+            print(f"\n{start_date:<15}{'weekend, skip':<15}")
+
+            continue
+
         print(f"\n{start_date:<15}")
 
         for symbol in symbols:
@@ -182,6 +190,6 @@ if __name__ == "__main__":
         
         out_df.write_csv(f"./csvs/{folder}/{start_date}.csv")
 
-        print(f"{'total':<15}{total_cost:<15.4f}{f'{time() - t_i:0.1f}s':<15}")
+        print(f"{'total':<15}{total_cost:<15.2f}{f'{time() - t_i:0.1f}s':<15}")
 
     print(f"{time() - t0:0.1f}s\n")
