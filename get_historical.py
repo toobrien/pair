@@ -50,7 +50,7 @@ def get_df(
                 ).alias(
                     "ts"
                 )
-            )
+            ).drop_nulls() # ts_event can be null, for some reason
     
     except Exception as e:
 
@@ -87,14 +87,11 @@ if __name__ == "__main__":
         total_cost  = 0
         skip_date   = False
 
-        print(f"{start_date} - {end_date}")
-
         for symbol in symbols:
 
             in_df, cost, size = get_df(symbol, start_date, end_date)
 
-            print(f"{symbol + ' cost':<15}{cost:0.4f}")
-            print(f"{symbol + ' size':<15}{size} ({size / 1073741824:0.2f} GB)")
+            print(f"{symbol:<15}{cost:<15.4f}{size:<15} ({size / 1073741824:0.2f} GB)")
 
             total_cost += cost
 
@@ -183,7 +180,6 @@ if __name__ == "__main__":
         
         out_df.write_csv(f"./csvs/{folder}/{start_date}.csv")
 
-        print(f"{start_date:<15}{time() - t_i:0.1f}s\n")
-        print(f"{start_date:<15}{total_cost:0.4f}")
+        print(f"{start_date:<15}{total_cost:<15.4f}{f'{time() - t_i:0.1f}s':<15}\n")
 
     print(f"{time() - t0:0.1f}s\n")
