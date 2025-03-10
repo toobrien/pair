@@ -116,6 +116,13 @@ def t_rule(data: List[dict]):
         ts          = arrs["ts"]
         i           = bisect_left(ts, in_ts)
         j           = bisect_left(ts, out_ts)
+
+        if i == len(ts):
+
+            # window out of range
+
+            continue
+
         spread      = arrs["spread"]
         X           = np.log(arrs["x_mid"]) - np.log(arrs["x_mid"][0])
         Y           = np.log(arrs["y_mid"]) - np.log(arrs["y_mid"][0])
