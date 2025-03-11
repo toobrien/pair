@@ -104,7 +104,7 @@ def t_rule(data: List[dict]):
     in_ts           = "11:30"
     out_ts          = "13:00"
     T               = 0.001 if mode == "R" else 2.0 if mode == "Z" else None
-    resample_out    = True
+    resample_out    = False
     resample_freq   = 60
     model           = LinearRegression()
     C               = []
@@ -129,10 +129,12 @@ def t_rule(data: List[dict]):
         
         model.fit(X[:i].reshape(-1, 1), Y[:i])
 
-        Y_          = model.predict(X[i:j].reshape(-1, 1))
-        residuals   = Y[i:j] - Y_
-        z_res       = (residuals - np.mean(residuals)) / residuals.std()
-        feature     = residuals if mode == "R" else z_res
+        Y_pred_in   = model.predict(X[:i].reshape(-1, 1))
+        res_in      = Y_pred_in - Y[:i]
+        Y_pred_out  = model.predict(X[i:j].reshape(-1, 1))
+        res_out     = Y[i:j] - Y_pred_out
+        z_res_out   = (res_out - np.mean(res_in)) / res_in.std()
+        feature     = res_out if mode == "R" else z_res_out
 
         for i_ in range(len(feature)):
 
