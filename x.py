@@ -104,7 +104,7 @@ def t_rule(data: List[dict]):
     in_ts           = "11:30"
     out_ts          = "13:00"
     T               = 0.001 if mode == "R" else 2.0 if mode == "Z" else None
-    resample_out    = False
+    resample_out    = True
     resample_freq   = 60
     model           = LinearRegression()
     C               = []
