@@ -108,7 +108,9 @@ def t_rule(data: List[dict]):
     resample_freq   = 60
     model           = LinearRegression()
     C               = []
-    text            = []
+    P               = []
+    C_text          = []
+    P_text          = []
     prev            = 0
 
     for date, arrs in data.items():
@@ -147,20 +149,34 @@ def t_rule(data: List[dict]):
                 C_      = spread[m:n] * pos
                 C_      = C_ - C_[0] + prev
                 prev    = C_[-1]
+                P_      = C_[-1] - C_[0]
 
                 C.extend(C_)
-                text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[m:n] ])
+                C_text.extend([ f"{date}<br>{ts_}<br>{int(pos)}" for ts_ in ts[m:n] ])
+                P.append(P_)
+                P_text.append(f"{date}<br>{pos}<br>o: {spread[m]:0.2f}<br>c: {spread[n - 1]:0.2f}")
 
                 break
         
-    fig = go.Figure()
+    fig = make_subplots(
+            rows                = 2, 
+            cols                = 2,
+            row_heights         = [ 0.6, 0.4 ],
+            column_widths       = [ 0.5, 0.5 ],
+            specs               = [ 
+                                    [ { "colspan": 2 }, {} ],
+                                    [ {}, {} ]
+                                ],
+            vertical_spacing    = 0.025,
+            horizontal_spacing  = 0.025,
+        )
     X   = [ i for i in range(len(C)) ]
 
     if resample_out:
 
         X       = resample(X, resample_freq)
         C       = resample(C, resample_freq)
-        text    = resample(text, resample_freq)
+        C_text  = resample(C_text, resample_freq)
 
     fig.add_trace(
         go.Scattergl(
@@ -168,10 +184,21 @@ def t_rule(data: List[dict]):
                 "x":    X,
                 "y":    C,
                 "name": "eqc",
-                "text": text
+                "text": C_text
             }
-        )
+        ),
+        row = 1,
+        col = 1
     )
+
+    fig.add_trace(go.Scatter(y = np.cumsum(P), text = P_text, name = "eqc_d"), row = 2, col = 1)
+    fig.add_trace(go.Bar(y = P, hovertext = P_text, name = "pnls"), row = 2, col = 2)
+
+    print(f"n:   {len(P)}")
+    print(f"mu:  {np.mean(P):0.2f}")
+    print(f"std: {np.std(P):0.2f}")
+    print(f"max: {max(P):0.2f}" )
+    print(f"min: {min(P):0.2f}" )
 
     fig.show()
 
